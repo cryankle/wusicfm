@@ -1,0 +1,296 @@
+
+:root {
+    --bg-color: rgb(12, 4, 2);
+    --comp-color: rgb(232, 194, 187);
+}
+
+
+h1 {
+    padding-top: 100px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: 72px;
+    display: flex;
+    position: absolute;
+    flex-direction: column;
+    margin-left: -1580px;
+    padding-top: 1000px;
+    color: var(--comp-color);
+}
+
+h2 {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: 10px;
+    margin-top: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--comp-color);
+}
+
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    margin: 0;
+}
+
+.music-container {
+    width: 500px;
+    max-width: 90vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#title {
+    color: var(--comp-color);
+    padding: 0px 0px;
+    font-size: 25px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.musician {
+    color: var(--comp-color);
+    font-weight: bold;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    position: absolute;
+    margin-left: 1230px;
+    padding-bottom: 220px;
+}
+
+.walloftext{
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    color: var(--comp-color);
+    margin-right: 1250px;
+    margin-bottom: 200px;
+}
+
+.walloftext1{
+    position: absolute;
+    color: var(--comp-color);
+    margin-right: 1250px;
+    margin-bottom: 140px;
+}
+
+.walloftext2{
+    position: absolute;
+    color: var(--comp-color);
+    margin-right: 1250px;
+    margin-bottom: 100px;
+}
+
+.walloftext3{
+    position: absolute;
+    color: var(--comp-color);
+    margin-right: 1250px;
+    margin-bottom: 40px;
+}
+
+.walloftext4{
+    position: absolute;
+    color: var(--comp-color);
+    margin-right: 1250px;
+    margin-bottom: -30px;
+}
+
+.walloftext5{
+    position: absolute;
+    color: var(--comp-color);
+    margin-right: 1250px;
+    margin-top: 100px;
+}
+
+.walloftext6{
+    position: absolute;
+    color: var(--comp-color);
+    margin-right: 1250px;
+    margin-top:150px;
+}
+
+.walloftext7{
+    position: absolute;
+    font-size: 40px;
+    font-weight:lighter;
+    color: var(--comp-color);
+    margin-right: 1250px;
+    margin-top:230px;
+}
+
+.walloftext8{
+    position: absolute;
+    color: var(--comp-color);
+    margin-right: 1250px;
+    margin-top:320px;
+}
+
+.walloftext9{
+    position: absolute;
+    color: var(--comp-color);
+    margin-right: 1250px;
+    margin-top:400px;
+}
+
+.img-container {
+    display: grid;
+    margin-top: 2%;
+}
+
+.img-container img {
+    border-radius: 0;
+    object-fit: cover;
+    position: relative;
+}
+
+.action-btn {
+    color: var(--comp-color);
+    margin-top: 0px;
+    background-color: var(--bg-color);
+    border: 0;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+
+.action-btn-big {
+    color: var(--comp-color);
+    background-color: var(--bg-color);
+    border: 0;
+    width: 50px;
+    position: relative;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+ol {
+    color: var(--comp-color);
+    display: flex;
+    position:absolute;
+    font-size: 32px;
+    flex-direction: column;
+    margin-left: 1300px;
+    padding-top: 100px;
+}
+
+#audio {
+  display: none;
+}
+
+.music-info {
+    display: grid;
+    justify-content: center;
+}
+
+.author-cont {
+    display: flex;
+    align-self: flex-end;
+}
+
+.author {
+    font-family:'Courier New', Courier, monospace;
+    font-size: 12px;
+    padding-right: 25px;
+  display: flex;
+  color:rgb(49, 49, 49);;
+}
+
+.progress-container {
+    background-color: var(--comp-color);
+    border-radius: 0px;
+    cursor: pointer;
+    margin: 20px auto;
+    height: 20px;
+    width: 100%;
+    max-width: 200px;
+}
+
+
+.progress {
+    background-color: var(--bg-color);
+    border-radius: 0px;
+    height: 100%;
+    width: 0%;
+    transition: width .1s linear;
+}
+
+.volume-slider {
+    background-color: var(--bg-color);
+    position: absolute;
+    font-size: 40px;
+    font-weight:lighter;
+    accent-color: var(--comp-color);
+    margin-top:1000px;
+    width: 200px;
+}
+
+
+/* ========== MOBILE FIXES ========== */
+@media (max-width: 430px) {
+
+  /* Stack everything nicely on mobile */
+  h1, h2, .musician, ol, .volume-slider {
+    position: relative !important;
+    margin: 5px auto !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    text-align: center !important;
+    width: 90% !important;
+  }
+
+  /* Stack wall-of-text vertically */
+  .walloftext, .walloftext1, .walloftext2, .walloftext3,
+  .walloftext4, .walloftext5, .walloftext6, .walloftext7,
+  .walloftext8, .walloftext9 {
+    position: relative !important;
+    margin: 5px auto !important;
+    text-align: center !important;
+    width: 90% !important;
+  }
+
+  .music-container {
+    width: 95% !important;
+    max-width: 400px !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+
+  .img-container img {
+    width: 100% !important;
+    height: auto !important;
+    margin-bottom: 15px !important;
+  }
+
+  .navigation {
+    flex-direction: row !important;
+    justify-content: center !important;
+    gap: 15px !important;
+    margin: 10px auto !important;
+    flex-wrap: wrap !important;
+  }
+
+  .volume-slider {
+    width: 120px !important;
+    margin: 10px auto 20px auto !important;
+    display: block !important;
+  }
+
+  #title, .author-cont {
+    text-align: center !important;
+    position: relative !important;
+    margin: 5px auto !important;
+  }
+}
