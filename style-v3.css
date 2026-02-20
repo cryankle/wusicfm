@@ -1,46 +1,43 @@
-
 :root {
     --bg-color: rgb(12, 4, 2);
     --comp-color: rgb(232, 194, 187);
 }
 
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-color);
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    color: var(--comp-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
 
 h1 {
-    padding-top: 100px;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     font-size: 72px;
-    display: flex;
+    color: var(--comp-color);
     position: absolute;
     flex-direction: column;
     margin-left: -1580px;
-    padding-top: 1000px;
-    color: var(--comp-color);
+    padding-top: 00px;
 }
 
 h2 {
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     font-size: 10px;
-    margin-top: 150px;
     display: flex;
     justify-content: center;
     align-items: center;
     color: var(--comp-color);
-}
-
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    background-color: var(--bg-color);
-    height: 80vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    margin: 0;
+    margin-top: -100px;
 }
 
 .music-container {
@@ -53,7 +50,6 @@ body {
 
 #title {
     color: var(--comp-color);
-    padding: 0px 0px;
     font-size: 25px;
     text-align: center;
     white-space: nowrap;
@@ -64,84 +60,17 @@ body {
 .musician {
     color: var(--comp-color);
     font-weight: bold;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     position: absolute;
     margin-left: 1230px;
     padding-bottom: 220px;
 }
 
-.walloftext{
-    display: flex;
-    flex-direction: column;
-    position: absolute;
+.walloftext, .walloftext1, .walloftext2, .walloftext3,
+.walloftext4, .walloftext5, .walloftext6, .walloftext7,
+.walloftext8, .walloftext9 {
+    position: relative;
     color: var(--comp-color);
     margin-right: 1250px;
-    margin-bottom: 200px;
-}
-
-.walloftext1{
-    position: absolute;
-    color: var(--comp-color);
-    margin-right: 1250px;
-    margin-bottom: 140px;
-}
-
-.walloftext2{
-    position: absolute;
-    color: var(--comp-color);
-    margin-right: 1250px;
-    margin-bottom: 100px;
-}
-
-.walloftext3{
-    position: absolute;
-    color: var(--comp-color);
-    margin-right: 1250px;
-    margin-bottom: 40px;
-}
-
-.walloftext4{
-    position: absolute;
-    color: var(--comp-color);
-    margin-right: 1250px;
-    margin-bottom: -30px;
-}
-
-.walloftext5{
-    position: absolute;
-    color: var(--comp-color);
-    margin-right: 1250px;
-    margin-top: 100px;
-}
-
-.walloftext6{
-    position: absolute;
-    color: var(--comp-color);
-    margin-right: 1250px;
-    margin-top:150px;
-}
-
-.walloftext7{
-    position: absolute;
-    font-size: 40px;
-    font-weight:lighter;
-    color: var(--comp-color);
-    margin-right: 1250px;
-    margin-top:230px;
-}
-
-.walloftext8{
-    position: absolute;
-    color: var(--comp-color);
-    margin-right: 1250px;
-    margin-top:320px;
-}
-
-.walloftext9{
-    position: absolute;
-    color: var(--comp-color);
-    margin-right: 1250px;
-    margin-top:400px;
 }
 
 .img-container {
@@ -160,25 +89,26 @@ body {
     margin-top: 0px;
     background-color: var(--bg-color);
     border: 0;
+    margin-left: 100px;
     font-size: 18px;
+    justify-content: center;
+    align-items: center;
+
     cursor: pointer;
 }
-
 
 .action-btn-big {
     color: var(--comp-color);
     background-color: var(--bg-color);
     border: 0;
-    width: 50px;
-    position: relative;
+    width: 0px;
     font-size: 30px;
     cursor: pointer;
 }
 
 ol {
     color: var(--comp-color);
-    display: flex;
-    position:absolute;
+    position: absolute;
     font-size: 32px;
     flex-direction: column;
     margin-left: 1300px;
@@ -186,7 +116,7 @@ ol {
 }
 
 #audio {
-  display: none;
+    display: none;
 }
 
 .music-info {
@@ -203,8 +133,7 @@ ol {
     font-family:'Courier New', Courier, monospace;
     font-size: 12px;
     padding-right: 25px;
-  display: flex;
-  color:rgb(49, 49, 49);;
+    color: rgb(49, 49, 49);
 }
 
 .progress-container {
@@ -216,7 +145,6 @@ ol {
     width: 100%;
     max-width: 200px;
 }
-
 
 .progress {
     background-color: var(--bg-color);
@@ -230,33 +158,24 @@ ol {
     background-color: var(--bg-color);
     position: absolute;
     font-size: 40px;
-    font-weight:lighter;
+    font-weight: lighter;
     accent-color: var(--comp-color);
-    margin-top:1000px;
+    margin-top: 700px;
     width: 200px;
 }
-
 
 /* ========== MOBILE FIXES ========== */
 @media (max-width: 430px) {
 
-  /* Stack everything nicely on mobile */
-  h1, h2, .musician, ol, .volume-slider {
+  /* Reset all absolute positions */
+  h1, h2, .walloftext, .walloftext1, .walloftext2, .walloftext3,
+  .walloftext4, .walloftext5, .walloftext6, .walloftext7,
+  .walloftext8, .walloftext9, .musician, ol, .volume-slider {
     position: relative !important;
     margin: 5px auto !important;
     left: auto !important;
     right: auto !important;
     top: auto !important;
-    text-align: center !important;
-    width: 90% !important;
-  }
-
-  /* Stack wall-of-text vertically */
-  .walloftext, .walloftext1, .walloftext2, .walloftext3,
-  .walloftext4, .walloftext5, .walloftext6, .walloftext7,
-  .walloftext8, .walloftext9 {
-    position: relative !important;
-    margin: 5px auto !important;
     text-align: center !important;
     width: 90% !important;
   }
@@ -288,7 +207,7 @@ ol {
     display: block !important;
   }
 
-  #title, .author-cont {
+  #title, .musician, .author-cont {
     text-align: center !important;
     position: relative !important;
     margin: 5px auto !important;
