@@ -185,6 +185,10 @@ ol {
     padding-top: 100px;
 }
 
+#audio {
+  display: none;
+}
+
 .music-info {
     display: grid;
     justify-content: center;
