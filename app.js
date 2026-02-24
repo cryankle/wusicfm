@@ -1,4 +1,3 @@
-// Remove any existing supabase declarations - this is the only one we need
 const musicContainer = document.getElementById('music-container');
 const playBtn = document.getElementById('play');
 const prevBtn = document.getElementById('prev');
@@ -17,13 +16,14 @@ if (volume) {
     });
 }
 
-// Initialize Supabase client (ONLY ONCE)
+// Initialize Supabase client
 const supabaseClient = window.supabase.createClient(
   'https://aebaggytwjsmhdbnpoos.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlYmFnZ3l0d2pzbWhkYm5wb29zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg5OTU0MTAsImV4cCI6MjA1NDU3MTQxMH0.kGjHajHOKJ1eJzP9YhX_LdOqh94I7g4Fq0eKk86KpWc'
 );
 
-// Song metadata with filenames only
+// IMPORTANT: Use EXACT filenames as they appear in Supabase Storage
+// Check your Supabase Storage to confirm these are correct
 const songs = [
   { name: "Online", filename: "1 - Online.mp3" },
   { name: "Heat (Finger)", filename: "2 - Heat (Finger).mp3" },
@@ -38,24 +38,26 @@ const songs = [
 let songIndex = 0;
 let isLoading = false;
 
-// Get signed URL from Supabase
+// Get signed URL from Supabase - FIXED VERSION
 async function getSignedUrl(filename) {
     try {
         console.log('Getting signed URL for:', filename);
+        
+        // Don't encode the filename - let Supabase handle it
         const { data, error } = await supabaseClient
             .storage
             .from('public-audio')
             .createSignedUrl(filename, 3600);
 
         if (error) {
-            console.error('Supabase error:', error);
+            console.error('Supabase error details:', error);
             return null;
         }
         
         console.log('Got signed URL:', data.signedUrl);
         return data.signedUrl;
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Error in getSignedUrl:', error);
         return null;
     }
 }
@@ -76,9 +78,18 @@ async function loadSong(index) {
             audio.src = signedUrl;
             title.innerText = "Now playing: " + song.name;
             console.log('Song loaded successfully');
+            
+            // If play button was clicked, auto-play
+            if (musicContainer.classList.contains('play')) {
+                try {
+                    await audio.play();
+                } catch (playError) {
+                    console.log('Auto-play prevented:', playError);
+                }
+            }
         } else {
             title.innerText = "Error: Could not load " + song.name;
-            console.error('Failed to load song');
+            console.error('Failed to load song - no signed URL returned');
         }
     } catch (error) {
         console.error('Error in loadSong:', error);
@@ -95,12 +106,17 @@ async function playSong() {
     playBtn.querySelector('i.fas').classList.remove("fa-play");
     playBtn.querySelector("i.fas").classList.add('fa-pause');
     
+    // If no audio source, load the song first
+    if (!audio.src) {
+        await loadSong(songIndex);
+    }
+    
     try {
         await audio.play();
         console.log('Song is playing');
     } catch (error) {
         console.error('Playback error:', error);
-        // If playback fails, try reloading the song
+        // If play fails, try reloading the song
         await loadSong(songIndex);
         try {
             await audio.play();
@@ -154,16 +170,20 @@ playBtn.addEventListener("click", () => {
 prevBtn.addEventListener("click", prevSong);
 nextBtn.addEventListener("click", nextSong);
 
-// Progress bar
+// Progress bar - FIXED VERSION
 function setProgress(e) {
     const width = this.clientWidth;
     const clickX = e.offsetX;
     const duration = audio.duration;
-    audio.currentTime = (clickX / width) * duration;
+    
+    // Check if duration is a valid number
+    if (duration && isFinite(duration)) {
+        audio.currentTime = (clickX / width) * duration;
+    }
 }
 
 function updateProgress(e) {
-    if (audio.duration) {
+    if (audio.duration && isFinite(audio.duration)) {
         const { duration, currentTime } = e.srcElement;
         const progressPercent = (currentTime / duration) * 100;
         progress.style.width = `${progressPercent}%`;
