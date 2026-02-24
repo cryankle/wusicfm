@@ -8,7 +8,13 @@ const title = document.getElementById('title');
 const progress = document.getElementById('progress');
 const progressContainer = document.getElementById('progress-container');
 
-// Only song names and filenames (NO URLs!)
+// Initialize Supabase client with your anon key
+const supabase = window.supabase.createClient(
+  'https://aebaggytwjsmhdbnpoos.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlYmFnZ3l0d2pzbWhkYm5wb29zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg5OTU0MTAsImV4cCI6MjA1NDU3MTQxMH0.kGjHajHOKJ1eJzP9YhX_LdOqh94I7g4Fq0eKk86KpWc'
+);
+
+// Song metadata with filenames only (no public URLs)
 const songs = [
   { name: "Online", filename: "1 - Online.mp3" },
   { name: "Heat (Finger)", filename: "2 - Heat (Finger).mp3" },
@@ -22,42 +28,41 @@ const songs = [
 
 // Volume slider
 let volume = document.getElementById('volume-slider');
-volume.addEventListener("change", function(e) {
-    audio.volume = e.currentTarget.value / 100;
-});
+if (volume) {
+    volume.addEventListener("change", function(e) {
+        audio.volume = e.currentTarget.value / 100;
+    });
+}
 
 let songIndex = 0;
 
-// ONLY ONE NEW FUNCTION: Get URL from Edge Function
-async function getSongUrl(filename) {
+// Get signed URL directly from Supabase (NO EDGE FUNCTION NEEDED)
+async function getSignedUrl(filename) {
     try {
-        const response = await fetch('https://aebaggytwjsmhdbnpoos.supabase.co/functions/v1/get-song-url', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ filename })
-        });
+        const { data, error } = await supabase
+            .storage
+            .from('public-audio')
+            .createSignedUrl(filename, 3600); // 1 hour expiry
 
-        if (!response.ok) {
-            throw new Error('Could not get URL');
+        if (error) {
+            console.error('Supabase error:', error);
+            return null;
         }
-
-        const data = await response.json();
+        
+        console.log('Got signed URL:', data.signedUrl);
         return data.signedUrl;
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Error getting signed URL:', error);
         return null;
     }
 }
 
-// Update the loadSong function
+// Load song with signed URL
 async function loadSong(index) {
     const song = songs[index];
     title.innerText = "Loading: " + song.name + "...";
     
-    // Get URL from Edge Function
-    const signedUrl = await getSongUrl(song.filename);
+    const signedUrl = await getSignedUrl(song.filename);
     
     if (signedUrl) {
         audio.src = signedUrl;
@@ -91,11 +96,11 @@ async function playSong() {
     try {
         await audio.play();
     } catch (error) {
-        console.log('Retrying...');
-        // If error, refresh the URL
-        const newUrl = await getSongUrl(songs[songIndex].filename);
-        if (newUrl) {
-            audio.src = newUrl;
+        console.error('Playback error:', error);
+        // If playback fails, try reloading the signed URL
+        const signedUrl = await getSignedUrl(songs[songIndex].filename);
+        if (signedUrl) {
+            audio.src = signedUrl;
             await audio.play();
         }
     }
@@ -122,7 +127,7 @@ async function nextSong() {
     playSong();
 }
 
-// Progress bar - STAYS EXACTLY THE SAME
+// Progress bar
 function setProgress(e) {
     const width = this.clientWidth;
     const clickX = e.offsetX;
