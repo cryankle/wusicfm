@@ -6,21 +6,18 @@
 
 
 h1 {
+    flex:4;
     padding-top: 100px;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     font-size: 72px;
     display: flex;
-    position: absolute;
     flex-direction: column;
-    margin-left: -1580px;
-    padding-top: 1000px;
     color: var(--comp-color);
 }
 
 h2 {
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     font-size: 10px;
-    margin-top: 150px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -33,18 +30,14 @@ h2 {
 }
 
 body {
+    display: flex;
     background-color: var(--bg-color);
     height: 80vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     margin: 0;
 }
 
 .music-container {
-    width: 500px;
     max-width: 90vw;
     display: flex;
     flex-direction: column;
@@ -53,115 +46,111 @@ body {
 
 #title {
     color: var(--comp-color);
-    padding: 0px 0px;
     font-size: 25px;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .musician {
     color: var(--comp-color);
     font-weight: bold;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    position: absolute;
-    margin-left: 1230px;
+    position: relative;
     padding-bottom: 220px;
+    float: right;
+}
+
+.middle {
+    flex: 2;
+}
+
+.left-side {
+    flex: 1;
+    float: left;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .walloftext{
-    display: flex;
-    flex-direction: column;
-    position: absolute;
+    position: relative;
     color: var(--comp-color);
-    margin-right: 1250px;
-    margin-bottom: 200px;
 }
 
 .walloftext1{
-    position: absolute;
+    position: relative;
     color: var(--comp-color);
-    margin-right: 1250px;
-    margin-bottom: 140px;
 }
 
 .walloftext2{
-    position: absolute;
+    position: relative;
     color: var(--comp-color);
-    margin-right: 1250px;
-    margin-bottom: 100px;
 }
 
 .walloftext3{
-    position: absolute;
+    position: relative;
     color: var(--comp-color);
-    margin-right: 1250px;
-    margin-bottom: 40px;
 }
 
 .walloftext4{
-    position: absolute;
+    position: relative;
     color: var(--comp-color);
-    margin-right: 1250px;
-    margin-bottom: -30px;
 }
 
 .walloftext5{
-    position: absolute;
+    position: relative;
     color: var(--comp-color);
-    margin-right: 1250px;
-    margin-top: 100px;
 }
 
 .walloftext6{
-    position: absolute;
+    position: relative;
     color: var(--comp-color);
-    margin-right: 1250px;
-    margin-top:150px;
 }
 
 .walloftext7{
-    position: absolute;
+    position: relative;
     font-size: 40px;
     font-weight:lighter;
     color: var(--comp-color);
-    margin-right: 1250px;
-    margin-top:230px;
 }
 
 .walloftext8{
-    position: absolute;
+    position: relative;
     color: var(--comp-color);
-    margin-right: 1250px;
-    margin-top:320px;
 }
 
 .walloftext9{
-    position: absolute;
+    position: relative;
     color: var(--comp-color);
-    margin-right: 1250px;
-    margin-top:400px;
+}
+
+.right-side {
+    flex: 3;
 }
 
 .img-container {
-    display: grid;
     margin-top: 2%;
 }
 
 .img-container img {
     border-radius: 0;
     object-fit: cover;
-    position: relative;
+    align-items: center;
+    justify-content: center;
+}
+
+.navigation {
+    margin-left: 41%;
+    justify-content: center;
+    align-items: center;
 }
 
 .action-btn {
     color: var(--comp-color);
+    flex-direction: column;
     margin-top: 0px;
     background-color: var(--bg-color);
     border: 0;
     font-size: 18px;
     cursor: pointer;
+
 }
 
 
@@ -178,11 +167,11 @@ body {
 ol {
     color: var(--comp-color);
     display: flex;
-    position:absolute;
+    position: relative;
+    align-items: start;
     font-size: 32px;
     flex-direction: column;
-    margin-left: 1300px;
-    padding-top: 100px;
+    float: right;
 }
 
 #audio {
@@ -190,22 +179,10 @@ ol {
 }
 
 .music-info {
-    display: grid;
-    justify-content: center;
+    height: 60px;
 }
 
-.author-cont {
-    display: flex;
-    align-self: flex-end;
-}
 
-.author {
-    font-family:'Courier New', Courier, monospace;
-    font-size: 12px;
-    padding-right: 25px;
-  display: flex;
-  color:rgb(49, 49, 49);;
-}
 
 .progress-container {
     background-color: var(--comp-color);
@@ -228,10 +205,10 @@ ol {
 
 .volume-slider {
     background-color: var(--bg-color);
-    position: absolute;
+    position: relative;
+    margin-left: 35%;
     font-size: 40px;
     font-weight:lighter;
-    accent-color: var(--comp-color);
-    margin-top:1000px;
+    accent-color: var(--bg-color);
     width: 200px;
 }
