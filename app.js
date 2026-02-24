@@ -8,16 +8,16 @@ const title = document.getElementById('title');
 const progress = document.getElementById('progress');
 const progressContainer = document.getElementById('progress-container');
 
-// Song URLs from Supabase
+// Only song names and filenames (NO URLs!)
 const songs = [
-  { name: "Online", url: "https://aebaggytwjsmhdbnpoos.supabase.co/storage/v1/object/public/public-audio/1%20-%20Online.mp3" },
-  { name: "Heat (Finger)", url: "https://aebaggytwjsmhdbnpoos.supabase.co/storage/v1/object/public/public-audio/2%20-%20Heat%20(Finger).mp3" },
-  { name: "Apocalypse Forever", url: "https://aebaggytwjsmhdbnpoos.supabase.co/storage/v1/object/public/public-audio/3%20-%20Apocalypse%20Forever.mp3" },
-  { name: "Sirens", url: "https://aebaggytwjsmhdbnpoos.supabase.co/storage/v1/object/public/public-audio/4%20-%20Sirens.mp3" },
-  { name: "Anything Goes", url: "https://aebaggytwjsmhdbnpoos.supabase.co/storage/v1/object/public/public-audio/5%20-%20Anything%20Goes.mp3" },
-  { name: "So Long", url: "https://aebaggytwjsmhdbnpoos.supabase.co/storage/v1/object/public/public-audio/6%20-%20So%20Long.mp3" },
-  { name: "Going After It", url: "https://aebaggytwjsmhdbnpoos.supabase.co/storage/v1/object/public/public-audio/7%20-%20Going%20After%20It.mp3" },
-  { name: "Tone Of The Unknown", url: "https://aebaggytwjsmhdbnpoos.supabase.co/storage/v1/object/public/public-audio/8%20-%20Tone%20Of%20The%20Unknown.mp3" }
+  { name: "Online", filename: "1 - Online.mp3" },
+  { name: "Heat (Finger)", filename: "2 - Heat (Finger).mp3" },
+  { name: "Apocalypse Forever", filename: "3 - Apocalypse Forever.mp3" },
+  { name: "Sirens", filename: "4 - Sirens.mp3" },
+  { name: "Anything Goes", filename: "5 - Anything Goes.mp3" },
+  { name: "So Long", filename: "6 - So Long.mp3" },
+  { name: "Going After It", filename: "7 - Going After It.mp3" },
+  { name: "Tone Of The Unknown", filename: "8 - Tone Of The Unknown.mp3" }
 ];
 
 // Volume slider
@@ -26,20 +26,51 @@ volume.addEventListener("change", function(e) {
     audio.volume = e.currentTarget.value / 100;
 });
 
-// Keep track of song
 let songIndex = 0;
 
-// Load initial song
-loadSong(songIndex);
+// ONLY ONE NEW FUNCTION: Get URL from Edge Function
+async function getSongUrl(filename) {
+    try {
+        const response = await fetch('https://aebaggytwjsmhdbnpoos.supabase.co/functions/v1/get-song-url', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ filename })
+        });
 
-// Load song details into DOM
-function loadSong(index) {
-    const song = songs[index];
-    title.innerText = "Now playing: " + song.name;
-    audio.src = song.url;
+        if (!response.ok) {
+            throw new Error('Could not get URL');
+        }
+
+        const data = await response.json();
+        return data.signedUrl;
+    } catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
 }
 
-// Event listeners for play/pause
+// Update the loadSong function
+async function loadSong(index) {
+    const song = songs[index];
+    title.innerText = "Loading: " + song.name + "...";
+    
+    // Get URL from Edge Function
+    const signedUrl = await getSongUrl(song.filename);
+    
+    if (signedUrl) {
+        audio.src = signedUrl;
+        title.innerText = "Now playing: " + song.name;
+    } else {
+        title.innerText = "Error: Could not load " + song.name;
+    }
+}
+
+// Load first song
+loadSong(songIndex);
+
+// Play/Pause button
 playBtn.addEventListener("click", () => {
     const isPlaying = musicContainer.classList.contains('play');
     if (isPlaying) {
@@ -49,47 +80,57 @@ playBtn.addEventListener("click", () => {
     }
 });
 
-// Previous / Next buttons
 prevBtn.addEventListener("click", prevSong);
 nextBtn.addEventListener("click", nextSong);
 
-function playSong(){
+async function playSong() {
     musicContainer.classList.add("play");
     playBtn.querySelector('i.fas').classList.remove("fa-play");
     playBtn.querySelector("i.fas").classList.add('fa-pause');
-    audio.play();
+    
+    try {
+        await audio.play();
+    } catch (error) {
+        console.log('Retrying...');
+        // If error, refresh the URL
+        const newUrl = await getSongUrl(songs[songIndex].filename);
+        if (newUrl) {
+            audio.src = newUrl;
+            await audio.play();
+        }
+    }
 }
 
-function pauseSong(){
+function pauseSong() {
     musicContainer.classList.remove("play");
     playBtn.querySelector('i.fas').classList.add("fa-play");
-    playBtn.querySelector('i.fas').classList.remove("fa-pause");
+    playBtn.querySelector("i.fas").classList.remove("fa-pause");
     audio.pause();
 }
 
-function prevSong(){
+async function prevSong() {
     songIndex--;
     if (songIndex < 0) songIndex = songs.length - 1;
-    loadSong(songIndex);
+    await loadSong(songIndex);
     playSong();
 }
 
-function nextSong(){
+async function nextSong() {
     songIndex++;
     if (songIndex >= songs.length) songIndex = 0;
-    loadSong(songIndex);
+    await loadSong(songIndex);
     playSong();
 }
 
-// Progress bar
-function setProgress(e){
+// Progress bar - STAYS EXACTLY THE SAME
+function setProgress(e) {
     const width = this.clientWidth;
     const clickX = e.offsetX;
     const duration = audio.duration;
     audio.currentTime = (clickX / width) * duration;
 }
 
-function updateProgress(e){
+function updateProgress(e) {
     const { duration, currentTime } = e.srcElement;
     const progressPercent = (currentTime / duration) * 100;
     progress.style.width = `${progressPercent}%`;
