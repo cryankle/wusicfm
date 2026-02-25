@@ -8,6 +8,74 @@ const title = document.getElementById('title');
 const progress = document.getElementById('progress');
 const progressContainer = document.getElementById('progress-container');
 
+// Add Media Session API for better mobile notifications - MOVED TO TOP
+if ('mediaSession' in navigator) {
+    console.log('✅ Media Session API is supported on this device');
+    
+    // Update media session with song metadata
+    function updateMediaSession(songName) {
+        console.log('Updating media session with song:', songName);
+        
+        // Create metadata with proper artwork URLs
+        const metadata = new MediaMetadata({
+            title: songName,
+            artist: 'Cry Ankle',
+            album: 'Apocalypse Forever',
+            artwork: [
+                // Use a valid public URL for the artwork
+                { 
+                    src: 'https://via.placeholder.com/512/1a1a1a/ffffff?text=Cry+Ankle', 
+                    sizes: '512x512', 
+                    type: 'image/png' 
+                },
+                { 
+                    src: 'https://via.placeholder.com/256/1a1a1a/ffffff?text=Cry+Ankle', 
+                    sizes: '256x256', 
+                    type: 'image/png' 
+                },
+                { 
+                    src: 'https://via.placeholder.com/128/1a1a1a/ffffff?text=Cry+Ankle', 
+                    sizes: '128x128', 
+                    type: 'image/png' 
+                }
+            ]
+        });
+        
+        navigator.mediaSession.metadata = metadata;
+        console.log('Media session updated:', metadata);
+    }
+
+    // Set up media controls
+    try {
+        navigator.mediaSession.setActionHandler('play', () => {
+            console.log('Media session: play');
+            playSong();
+        });
+        
+        navigator.mediaSession.setActionHandler('pause', () => {
+            console.log('Media session: pause');
+            pauseSong();
+        });
+        
+        navigator.mediaSession.setActionHandler('previoustrack', () => {
+            console.log('Media session: previous');
+            prevSong();
+        });
+        
+        navigator.mediaSession.setActionHandler('nexttrack', () => {
+            console.log('Media session: next');
+            nextSong();
+        });
+        
+        console.log('✅ Media session handlers set up successfully');
+    } catch (error) {
+        console.error('Error setting up media session handlers:', error);
+    }
+} else {
+    console.log('❌ Media Session API is NOT supported on this device');
+}
+
+
 // Volume slider
 let volume = document.getElementById('volume-slider');
 if (volume) {
@@ -16,28 +84,7 @@ if (volume) {
     });
 }
 
-// Add Media Session API for better mobile notifications
-if ('mediaSession' in navigator) {
-    // Update media session with song metadata
-    function updateMediaSession(songName) {
-        navigator.mediaSession.metadata = new MediaMetadata({
-            title: songName,
-            artist: 'Cry Ankle', // You can customize this
-            album: 'Apocalypse Forever?',
-            artwork: [
-                // Add album artwork if you have it
-                // If not, you can use a default image
-                { src: 'cryankle/wusicfm/apocalypse_forever.jpg', sizes: '512x512', type: 'image/jpeg' }
-            ]
-        });
-    }
 
-    // Handle media controls from notification/lock screen
-    navigator.mediaSession.setActionHandler('play', () => playSong());
-    navigator.mediaSession.setActionHandler('pause', () => pauseSong());
-    navigator.mediaSession.setActionHandler('previoustrack', () => prevSong());
-    navigator.mediaSession.setActionHandler('nexttrack', () => nextSong());
-}
 
 // ✅ FIXED: Using the new publishable key format
 const supabaseClient = window.supabase.createClient(
@@ -90,7 +137,13 @@ async function loadSong(index) {
     
     try {
         const song = songs[index];
+        console.log('Loading song:', song.name);
         title.innerText = "Loading: " + song.name + "...";
+        
+        // Update media session IMMEDIATELY with the song name
+        if ('mediaSession' in navigator) {
+            updateMediaSession(song.name);
+        }
         
         const signedUrl = await getSignedUrl(song.filename);
         
@@ -98,7 +151,7 @@ async function loadSong(index) {
             audio.src = signedUrl;
             title.innerText = "Now playing: " + song.name;
             
-            // ✅ Add this line to update notification with song name
+            // Update media session again to be safe
             if ('mediaSession' in navigator) {
                 updateMediaSession(song.name);
             }
@@ -144,6 +197,7 @@ prevBtn.addEventListener("click", prevSong);
 nextBtn.addEventListener("click", nextSong);
 
 async function playSong() {
+    console.log('playSong() called');
     musicContainer.classList.add("play");
     playBtn.querySelector('i.fas').classList.remove("fa-play");
     playBtn.querySelector("i.fas").classList.add('fa-pause');
@@ -154,16 +208,30 @@ async function playSong() {
     
     try {
         await audio.play();
+        console.log('Audio.play() succeeded');
+        
+        // Update media session play state
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.playbackState = 'playing';
+            console.log('Media session playback state: playing');
+        }
     } catch (error) {
         console.error('Playback error:', error);
     }
 }
 
 function pauseSong() {
+    console.log('pauseSong() called');
     musicContainer.classList.remove("play");
     playBtn.querySelector('i.fas').classList.add("fa-play");
     playBtn.querySelector("i.fas").classList.remove("fa-pause");
     audio.pause();
+    
+    // Update media session play state
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.playbackState = 'paused';
+        console.log('Media session playback state: paused');
+    }
 }
 
 async function prevSong() {
@@ -202,3 +270,16 @@ function updateProgress(e) {
 audio.addEventListener('timeupdate', updateProgress);
 progressContainer.addEventListener("click", setProgress);
 audio.addEventListener("ended", nextSong);
+
+
+// TEMPORARY TEST FUNCTION - Remove after testing
+window.testMediaSession = function() {
+    if ('mediaSession' in navigator) {
+        updateMediaSession('Test Song');
+        navigator.mediaSession.playbackState = 'playing';
+        console.log('Test media session set. Check your iPhone now!');
+    } else {
+        console.log('Media Session not supported');
+    }
+};
+console.log('Run window.testMediaSession() in console to test Media Session');
