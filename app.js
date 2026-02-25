@@ -9,6 +9,7 @@ const progress = document.getElementById('progress');
 const progressContainer = document.getElementById('progress-container');
 
 // Add Media Session API for better mobile notifications - MOVED TO TOP
+// Add Media Session API for better mobile notifications
 if ('mediaSession' in navigator) {
     console.log('✅ Media Session API is supported on this device');
     
@@ -16,33 +17,52 @@ if ('mediaSession' in navigator) {
     function updateMediaSession(songName) {
         console.log('Updating media session with song:', songName);
         
-        // Create metadata with proper artwork URLs
-        const metadata = new MediaMetadata({
-            title: songName,
-            artist: 'Cry Ankle',
-            album: 'Apocalypse Forever',
-            artwork: [
-                // Use a valid public URL for the artwork
-                { 
-                    src: 'https://via.placeholder.com/512/1a1a1a/ffffff?text=Cry+Ankle', 
-                    sizes: '512x512', 
-                    type: 'image/png' 
+        try {
+            // iOS needs artwork to be an array of objects with specific properties
+            const artwork = [
+                {
+                    src: 'https://via.placeholder.com/512/1a1a1a/ff6b6b?text=' + encodeURIComponent(songName),
+                    sizes: '512x512',
+                    type: 'image/png'
                 },
-                { 
-                    src: 'https://via.placeholder.com/256/1a1a1a/ffffff?text=Cry+Ankle', 
-                    sizes: '256x256', 
-                    type: 'image/png' 
+                {
+                    src: 'https://via.placeholder.com/256/1a1a1a/ff6b6b?text=' + encodeURIComponent(songName),
+                    sizes: '256x256',
+                    type: 'image/png'
                 },
-                { 
-                    src: 'https://via.placeholder.com/128/1a1a1a/ffffff?text=Cry+Ankle', 
-                    sizes: '128x128', 
-                    type: 'image/png' 
+                {
+                    src: 'https://via.placeholder.com/128/1a1a1a/ff6b6b?text=' + encodeURIComponent(songName),
+                    sizes: '128x128',
+                    type: 'image/png'
                 }
-            ]
-        });
-        
-        navigator.mediaSession.metadata = metadata;
-        console.log('Media session updated:', metadata);
+            ];
+            
+            // Create metadata
+            const metadata = new MediaMetadata({
+                title: songName,
+                artist: 'Cry Ankle',
+                album: 'Apocalypse Forever',
+                artwork: artwork
+            });
+            
+            // Set the metadata
+            navigator.mediaSession.metadata = metadata;
+            
+            // Force a small delay and then verify
+            setTimeout(() => {
+                if (navigator.mediaSession.metadata) {
+                    console.log('✅ Media session verified:', {
+                        title: navigator.mediaSession.metadata.title,
+                        artist: navigator.mediaSession.metadata.artist,
+                        album: navigator.mediaSession.metadata.album,
+                        artworkCount: navigator.mediaSession.metadata.artwork?.length || 0
+                    });
+                }
+            }, 100);
+            
+        } catch (error) {
+            console.error('Error updating media session:', error);
+        }
     }
 
     // Set up media controls
@@ -268,14 +288,15 @@ async function playSong() {
     }
     
     try {
-        await audio.play();
-        console.log('Audio.play() succeeded');
-        
-        // Update media session play state
+        // Set playback state to playing BEFORE playing
         if ('mediaSession' in navigator) {
             navigator.mediaSession.playbackState = 'playing';
             console.log('Media session playback state: playing');
         }
+        
+        await audio.play();
+        console.log('Audio.play() succeeded');
+        
     } catch (error) {
         console.error('Playback error:', error);
     }
