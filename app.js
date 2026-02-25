@@ -76,6 +76,67 @@ if ('mediaSession' in navigator) {
 }
 
 
+// TEMPORARY: Show console logs on iPhone screen
+(function() {
+    // Create a floating debug panel
+    const debugDiv = document.createElement('div');
+    debugDiv.style.position = 'fixed';
+    debugDiv.style.bottom = '10px';
+    debugDiv.style.right = '10px';
+    debugDiv.style.backgroundColor = 'rgba(0,0,0,0.8)';
+    debugDiv.style.color = 'lime';
+    debugDiv.style.padding = '10px';
+    debugDiv.style.borderRadius = '5px';
+    debugDiv.style.zIndex = '9999';
+    debugDiv.style.fontSize = '12px';
+    debugDiv.style.maxWidth = '80%';
+    debugDiv.style.maxHeight = '200px';
+    debugDiv.style.overflow = 'auto';
+    debugDiv.style.display = 'none'; // Hidden by default
+    debugDiv.id = 'debug-console';
+    document.body.appendChild(debugDiv);
+    
+    // Override console.log
+    const originalLog = console.log;
+    console.log = function(...args) {
+        originalLog.apply(console, args);
+        const debugEl = document.getElementById('debug-console');
+        if (debugEl) {
+            debugEl.style.display = 'block';
+            debugEl.innerHTML += args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg) : arg
+            ).join(' ') + '<br>';
+            // Auto-scroll to bottom
+            debugEl.scrollTop = debugEl.scrollHeight;
+        }
+    };
+    
+    // Add tap gesture to hide/show (5 taps)
+    let tapCount = 0;
+    let tapTimer;
+    document.addEventListener('touchend', function() {
+        tapCount++;
+        clearTimeout(tapTimer);
+        tapTimer = setTimeout(() => {
+            tapCount = 0;
+        }, 500);
+        
+        if (tapCount === 5) {
+            const debugEl = document.getElementById('debug-console');
+            if (debugEl) {
+                if (debugEl.style.display === 'none') {
+                    debugEl.style.display = 'block';
+                    debugEl.innerHTML += '📱 Debug mode activated<br>';
+                } else {
+                    debugEl.style.display = 'none';
+                }
+            }
+            tapCount = 0;
+        }
+    });
+})();
+
+
 // Volume slider
 let volume = document.getElementById('volume-slider');
 if (volume) {
