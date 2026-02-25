@@ -16,6 +16,29 @@ if (volume) {
     });
 }
 
+// Add Media Session API for better mobile notifications
+if ('mediaSession' in navigator) {
+    // Update media session with song metadata
+    function updateMediaSession(songName) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: songName,
+            artist: 'Cry Ankle', // You can customize this
+            album: 'Apocalypse Forever?',
+            artwork: [
+                // Add album artwork if you have it
+                // If not, you can use a default image
+                { src: 'cryankle/wusicfm/apocalypse_forever.jpg', sizes: '512x512', type: 'image/jpeg' }
+            ]
+        });
+    }
+
+    // Handle media controls from notification/lock screen
+    navigator.mediaSession.setActionHandler('play', () => playSong());
+    navigator.mediaSession.setActionHandler('pause', () => pauseSong());
+    navigator.mediaSession.setActionHandler('previoustrack', () => prevSong());
+    navigator.mediaSession.setActionHandler('nexttrack', () => nextSong());
+}
+
 // ✅ FIXED: Using the new publishable key format
 const supabaseClient = window.supabase.createClient(
   'https://aebaggytwjsmhdbnpoos.supabase.co',
@@ -74,6 +97,11 @@ async function loadSong(index) {
         if (signedUrl) {
             audio.src = signedUrl;
             title.innerText = "Now playing: " + song.name;
+            
+            // ✅ Add this line to update notification with song name
+            if ('mediaSession' in navigator) {
+                updateMediaSession(song.name);
+            }
         } else {
             title.innerText = "Error: Could not load " + song.name;
         }
@@ -84,6 +112,20 @@ async function loadSong(index) {
         isLoading = false;
     }
 }
+
+// Update media session position state
+audio.addEventListener('timeupdate', () => {
+    if ('mediaSession' in navigator && audio.duration) {
+        navigator.mediaSession.setPositionState({
+            duration: audio.duration,
+            playbackRate: audio.playbackRate,
+            position: audio.currentTime
+        });
+    }
+    
+    // Your existing progress update
+    updateProgress({ srcElement: audio });
+});
 
 // Load first song
 loadSong(0);
