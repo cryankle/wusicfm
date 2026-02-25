@@ -46,7 +46,7 @@ if ('mediaSession' in navigator) {
         
         const artwork = [
             {
-                src: 'https://via.placeholder.com/512/1a1a1a/ff6b6b?text=' + encodeURIComponent(songName),
+                src: 'https://raw.githubusercontent.com/cryankle/wusicfm/main/apocalypse_forever.jpg',
                 sizes: '512x512',
                 type: 'image/png'
             }
@@ -210,3 +210,22 @@ progressContainer.addEventListener("click", setProgress);
 
 // Load first song
 loadSong(0);
+
+
+// Test function for GitHub images
+window.testImages = async function() {
+    const imageUrl = 'https://raw.githubusercontent.com/cryankle/wusicfm/main/apocalypse_forever.jpg';
+    
+    try {
+        const response = await fetch(imageUrl, { method: 'HEAD' });
+        console.log('Image status:', response.status, response.ok ? '✅' : '❌');
+        
+        if (response.ok) {
+            console.log('Image URL is working!');
+        } else {
+            console.log('Image URL is not accessible - check the path');
+        }
+    } catch (error) {
+        console.error('Error testing image:', error);
+    }
+};
