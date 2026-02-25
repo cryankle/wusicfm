@@ -16,13 +16,13 @@ if (volume) {
     });
 }
 
-// ✅ FIXED: Using the new publishable key format
+// Supabase client
 const supabaseClient = window.supabase.createClient(
   'https://aebaggytwjsmhdbnpoos.supabase.co',
   'sb_publishable_gQCknZeqIOn22sSNnprSfg_7WL0EHkk'
 );
 
-// Song metadata with filenames
+// Songs
 const songs = [
   { name: "Online", filename: "1 - Online.mp3" },
   { name: "Heat (Finger)", filename: "2 - Heat (Finger).mp3" },
@@ -37,6 +37,9 @@ const songs = [
 let songIndex = 0;
 let isLoading = false;
 
+// Working image URL
+const ALBUM_ART_URL = 'https://raw.githubusercontent.com/cryankle/wusicfm/main/apocalypse_forever.jpg';
+
 // Media Session Setup
 if ('mediaSession' in navigator) {
     console.log('✅ Media Session API supported');
@@ -44,29 +47,56 @@ if ('mediaSession' in navigator) {
     function updateMediaSession(songName) {
         console.log('Updating media session for:', songName);
         
-        const artwork = [
-            {
-                src: 'https://raw.githubusercontent.com/cryankle/wusicfm/main/apocalypse_forever.jpg',
-                sizes: '512x512',
-                type: 'image/png'
-            }
-        ];
-        
-        navigator.mediaSession.metadata = new MediaMetadata({
-            title: songName,
-            artist: 'Cry Ankle',
-            album: 'Apocalypse Forever',
-            artwork: artwork
-        });
-        
-        console.log('Media session updated');
+        try {
+            // Create metadata with working image
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: songName,
+                artist: 'Cry Ankle',
+                album: 'Apocalypse Forever',
+                artwork: [
+                    {
+                        src: ALBUM_ART_URL,
+                        sizes: '512x512',
+                        type: 'image/jpeg'
+                    }
+                ]
+            });
+            
+            // Set playback state based on audio
+            navigator.mediaSession.playbackState = audio.paused ? 'paused' : 'playing';
+            
+            console.log('✅ Media session updated');
+        } catch (error) {
+            console.error('Media session error:', error);
+        }
     }
 
     // Set up media controls
-    navigator.mediaSession.setActionHandler('play', () => playSong());
-    navigator.mediaSession.setActionHandler('pause', () => pauseSong());
-    navigator.mediaSession.setActionHandler('previoustrack', () => prevSong());
-    navigator.mediaSession.setActionHandler('nexttrack', () => nextSong());
+    try {
+        navigator.mediaSession.setActionHandler('play', () => {
+            console.log('MediaSession: play');
+            playSong();
+        });
+        
+        navigator.mediaSession.setActionHandler('pause', () => {
+            console.log('MediaSession: pause');
+            pauseSong();
+        });
+        
+        navigator.mediaSession.setActionHandler('previoustrack', () => {
+            console.log('MediaSession: previous');
+            prevSong();
+        });
+        
+        navigator.mediaSession.setActionHandler('nexttrack', () => {
+            console.log('MediaSession: next');
+            nextSong();
+        });
+        
+        console.log('✅ Media session handlers set');
+    } catch (error) {
+        console.error('Handler error:', error);
+    }
 }
 
 // Get signed URL
@@ -80,7 +110,7 @@ async function getSignedUrl(filename) {
         if (error) throw error;
         return data.signedUrl;
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Signed URL error:', error);
         return null;
     }
 }
@@ -106,16 +136,16 @@ async function loadSong(index) {
             }
         }
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Load error:', error);
         title.innerText = "Error loading song";
     } finally {
         isLoading = false;
     }
 }
 
-// Play/Pause functions
+// Play function
 async function playSong() {
-    console.log('Play clicked');
+    console.log('playSong() called');
     
     if (!audio.src) {
         await loadSong(songIndex);
@@ -127,7 +157,7 @@ async function playSong() {
         playBtn.querySelector('i.fas').classList.remove("fa-play");
         playBtn.querySelector("i.fas").classList.add('fa-pause');
         
-        // Set playback state
+        // Update media session
         if ('mediaSession' in navigator) {
             navigator.mediaSession.playbackState = 'playing';
         }
@@ -136,13 +166,15 @@ async function playSong() {
     }
 }
 
+// Pause function
 function pauseSong() {
-    console.log('Pause clicked');
+    console.log('pauseSong() called');
     audio.pause();
     musicContainer.classList.remove("play");
     playBtn.querySelector('i.fas').classList.add("fa-play");
     playBtn.querySelector("i.fas").classList.remove("fa-pause");
     
+    // Update media session
     if ('mediaSession' in navigator) {
         navigator.mediaSession.playbackState = 'paused';
     }
@@ -200,7 +232,7 @@ audio.addEventListener('timeupdate', () => {
                 position: audio.currentTime
             });
         } catch (error) {
-            // Silently fail - not critical
+            // Ignore position state errors
         }
     }
 });
@@ -211,21 +243,11 @@ progressContainer.addEventListener("click", setProgress);
 // Load first song
 loadSong(0);
 
-
-// Test function for GitHub images
-window.testImages = async function() {
-    const imageUrl = 'https://raw.githubusercontent.com/cryankle/wusicfm/main/apocalypse_forever.jpg';
-    
-    try {
-        const response = await fetch(imageUrl, { method: 'HEAD' });
-        console.log('Image status:', response.status, response.ok ? '✅' : '❌');
-        
-        if (response.ok) {
-            console.log('Image URL is working!');
-        } else {
-            console.log('Image URL is not accessible - check the path');
-        }
-    } catch (error) {
-        console.error('Error testing image:', error);
+// Add a manual test function
+window.testNowPlaying = function() {
+    if ('mediaSession' in navigator) {
+        updateMediaSession(songs[songIndex].name);
+        navigator.mediaSession.playbackState = 'playing';
+        console.log('Test now playing sent');
     }
 };
