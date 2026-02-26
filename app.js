@@ -8,7 +8,6 @@ const title = document.getElementById('title');
 const progress = document.getElementById('progress');
 const progressContainer = document.getElementById('progress-container');
 
-import { Analytics } from "@vercel/analytics/next"
 
 // Volume slider
 let volume = document.getElementById('volume-slider');
